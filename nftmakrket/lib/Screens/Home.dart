@@ -39,6 +39,14 @@ class _HomeState extends State<Home> {
           if (snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
+                leading: GestureDetector(
+                  onTap: () {
+                    getCollection();
+                  },
+                  child: const Icon(
+                    Icons.refresh, // add custom icons also
+                  ),
+                ),
                 automaticallyImplyLeading: false,
               ),
               body: ListView(children: [

@@ -7,19 +7,29 @@ import 'package:nftmakrket/Screens/listAssets.dart';
 import 'package:nftmakrket/models/assets.dart';
 import 'package:nftmakrket/models/offer.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import '../constant.dart';
 
 class DetailsAssets extends StatefulWidget {
   static const routeName = '/DetailsAssets';
   const DetailsAssets({Key? key, this.idAssets}) : super(key: key);
   final idAssets;
+
   @override
   State<DetailsAssets> createState() => _DetailsAssetsState();
 }
 
+class _SalesData {
+  _SalesData(this.year, this.sales);
+
+  final String year;
+  final double sales;
+}
+
 class _DetailsAssetsState extends State<DetailsAssets> {
   Assets? assets;
+  // late List<Assets> data;
   Offer? offer;
   late Future<Assets> funcgetAssetsDetails;
   late Future<Offer> funcgetOfferList;
@@ -29,6 +39,13 @@ class _DetailsAssetsState extends State<DetailsAssets> {
     funcgetAssetsDetails = getAssetsDetails();
   }
 
+  List<_SalesData> data = [
+    _SalesData('Jan', 35),
+    _SalesData('Feb', 28),
+    _SalesData('Mar', 34),
+    _SalesData('Apr', 32),
+    _SalesData('May', 40)
+  ];
   String? url;
   @override
   Widget build(BuildContext context) {
@@ -150,16 +167,29 @@ class _DetailsAssetsState extends State<DetailsAssets> {
                                         const SizedBox(
                                           height: 3,
                                         ),
-                                        ListTile(
-                                          title: Text(
-                                            ' ${assets!.data![0].name}',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 30),
-                                          ),
-                                        ),
+                                        assets!.data![0].name == null
+                                            ? ListTile(
+                                                title: Text(
+                                                  '#${assets!.data![0].tokenId.toString()}',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20),
+                                                ),
+                                              )
+                                            : ListTile(
+                                                title: Text(
+                                                  ' ${assets!.data![0].name}',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 30),
+                                                ),
+                                              ),
                                         const SizedBox(
                                           height: 10,
                                         ),
@@ -185,21 +215,37 @@ class _DetailsAssetsState extends State<DetailsAssets> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              const SizedBox(
+                                              SizedBox(
                                                 height: 30,
                                               ),
-                                              ListTile(
-                                                title: Text(
-                                                  assets!.data![0].description
-                                                      .toString(),
-                                                  textAlign: TextAlign.left,
-                                                  style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20),
-                                                ),
-                                              ),
+                                              assets!.data![0].description ==
+                                                      null
+                                                  ? ListTile(
+                                                      title: Text(
+                                                        "no Desciption",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20),
+                                                      ),
+                                                    )
+                                                  : ListTile(
+                                                      title: Text(
+                                                        assets!.data![0]
+                                                            .description
+                                                            .toString(),
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 20),
+                                                      ),
+                                                    ),
                                             ],
                                           ),
                                         ),
@@ -241,45 +287,110 @@ class _DetailsAssetsState extends State<DetailsAssets> {
                                                 child: Text('Go to website'),
                                               )
                                             : const SizedBox(),
-                                        AnimatedContainer(
-                                          width: 400,
-                                          height: 150,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            color: const Color.fromARGB(
-                                                0, 255, 40, 72),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                blurRadius: 8,
-                                                color: Color.fromARGB(
-                                                    87, 0, 35, 40),
-                                                offset: Offset(0, 10),
-                                              )
-                                            ],
-                                          ),
-                                          duration: const Duration(seconds: 2),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: const [
-                                              SizedBox(
-                                                height: 30,
-                                              ),
-                                              ListTile(
-                                                title: Text(
-                                                  'put your plot',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 20),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              data = [];
+
+                                              for (int i = 0;
+                                                  i < offer!.data!.length;
+                                                  i++) {
+                                                data.add(
+                                                  _SalesData(
+                                                    '${DateTime.parse(offer!.data![i].createdDate!).day}/${DateTime.parse(offer!.data![i].createdDate!).month}/${DateTime.parse(offer!.data![i].createdDate!).hour}h',
+                                                    double.parse(offer!.data![i]
+                                                            .currentPrice!) /
+                                                        1000000000000000,
+                                                  ),
+                                                );
+                                                print(i);
+                                              }
+                                              showDialog(
+                                                context: context,
+                                                builder: (ctx) => AlertDialog(
+                                                  title: Text(
+                                                      'Half yearly sales analysis',
+                                                      textAlign:
+                                                          TextAlign.center),
+                                                  content: AnimatedContainer(
+                                                    width: deviceSize.width,
+                                                    height:
+                                                        deviceSize.height * 0.4,
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              0, 255, 40, 72),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          blurRadius: 1,
+                                                          color: Color.fromARGB(
+                                                              87, 0, 35, 40),
+                                                          offset: Offset(0, 0),
+                                                        )
+                                                      ],
+                                                    ),
+                                                    duration: const Duration(
+                                                        seconds: 2),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        SfCartesianChart(
+                                                          borderWidth: 1,
+                                                          primaryXAxis:
+                                                              CategoryAxis(),
+                                                          legend: Legend(
+                                                              isVisible: false),
+                                                          tooltipBehavior:
+                                                              TooltipBehavior(
+                                                                  enable: true),
+                                                          series: <
+                                                              ChartSeries<
+                                                                  _SalesData,
+                                                                  String>>[
+                                                            LineSeries<
+                                                                _SalesData,
+                                                                String>(
+                                                              dataSource: data,
+                                                              xValueMapper:
+                                                                  (_SalesData sales,
+                                                                          _) =>
+                                                                      sales
+                                                                          .year,
+                                                              yValueMapper:
+                                                                  (_SalesData sales,
+                                                                          _) =>
+                                                                      sales
+                                                                          .sales,
+                                                              name: 'Sales',
+                                                              // Enable data label
+                                                              dataLabelSettings:
+                                                                  DataLabelSettings(
+                                                                      isVisible:
+                                                                          true),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  actionsAlignment:
+                                                      MainAxisAlignment.start,
+                                                  actions: [
+                                                    TextButton(
+                                                      child: const Text('Back'),
+                                                      onPressed: () =>
+                                                          Navigator.of(ctx)
+                                                              .pop(),
+                                                    )
+                                                  ],
                                                 ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                              );
+                                            },
+                                            child: Text("more information")),
                                       ],
                                     ),
                                   ),
@@ -408,13 +519,16 @@ class _DetailsAssetsState extends State<DetailsAssets> {
         assets!.data![0].tokenId.toString()));
     if (response.statusCode == 200) {
       offer = Offer.fromJson(jsonDecode(response.body));
-      print(offer!.data![0].assetId);
+
       return offer!;
     } else {
       throw Exception('Failed to load Collections');
     }
   }
+// void _showDialog() {
+//     final deviceSize = MediaQuery.of(context).size;
 
+//   }
   Future<Assets> getAssetsDetails() async {
     final response = await http
         .get(Uri.parse(baseUrl + 'fetchById/' + widget.idAssets.toString()));

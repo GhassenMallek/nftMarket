@@ -78,20 +78,24 @@ class _DetailsState extends State<Details> {
                             itemCount: assets!.data!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return InkWell(
-                                onTap: () {
-                                  var id = assets!.data![index].id;
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (ctx) => DetailsAssets(
-                                          idAssets: id.toString()),
-                                    ),
-                                  );
-                                },
-                                child: MarketGrid(
-                                  assets!.data![index].name!,
-                                  assets!.data![index].imageUrl!,
-                                ),
-                              );
+                                  onTap: () {
+                                    var id = assets!.data![index].id;
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (ctx) => DetailsAssets(
+                                            idAssets: id.toString()),
+                                      ),
+                                    );
+                                  },
+                                  child: assets!.data![index].name == null
+                                      ? MarketGrid(
+                                          '',
+                                          assets!.data![index].imageUrl!,
+                                        )
+                                      : MarketGrid(
+                                          assets!.data![index].name!,
+                                          assets!.data![index].imageUrl!,
+                                        ));
                             },
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
